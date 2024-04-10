@@ -44,7 +44,7 @@ class Body:
             x = "eq" if self._pos.x == body.getPos().x else "lt" if self._pos.x > body.getPos().x else "gt"
             y = "eq" if self._pos.y == body.getPos().y else "lt" if self._pos.y > body.getPos().y else "gt"
 
-            h = sqrt(((self.pos.x-body.getPos().x)**2)+((self.pos.y-body.getPos().y)**2))
+            h = sqrt(((self._pos.x-body.getPos().x)**2)+((self._pos.y-body.getPos().y)**2))
 
             match (x, y):
                 case ("eq", "lt"):
@@ -83,8 +83,8 @@ while running:
     
     for body in BODIES:
         SCREEN.fill((0, 0, 0))
-        body.calcResultantForce()
+        body.calcResultantForce(BODIES)
         body.update()
         body.render()
         pygame.display.update()
-        header.CLOCK.tick()
+        CLOCK.tick()
