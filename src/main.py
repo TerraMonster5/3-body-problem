@@ -12,7 +12,7 @@ pygame.init()
 CLOCK = pygame.time.Clock()
 def dt() -> float: return CLOCK.get_time()
 
-SCREEN: pygame.Surface = pygame.display.set_mode((800, 800))
+SCREEN: pygame.Surface = pygame.display.set_mode((1200, 900))
 
 G: float = 6.6743015e-11
 
@@ -28,11 +28,13 @@ class Body:
         self._acc.x = self._rfv.x/self._mass
         self._acc.y = self._rfv.y/self._mass
 
-        self._pos.x += self._vel.x*dt()+0.5*self._acc.x*((dt())**2)
-        self._pos.y += self._vel.y*dt()+0.5*self._acc.y*((dt())**2)
+        self._pos.x += (self._vel.x*dt()+0.5*self._acc.x*((dt())**2))/1000
+        self._pos.y += (self._vel.y*dt()+0.5*self._acc.y*((dt())**2))/1000
 
         self._vel.x += self._acc.x*dt()
         self._vel.y += self._acc.y*dt()
+
+        print(self._pos)
 
     def render(self) -> None:
         pygame.draw.circle(SCREEN, (255, 0, 0), self._pos, 10)
@@ -40,7 +42,7 @@ class Body:
     def calcResultantForce(self, bodies: list[Body]) -> None:
         self._rfv.x = self._rfv.y = 0
         for body in bodies:
-            r = self._pos.distance_to(body.getPos())
+            r = self._pos.distance_to(body.getPos()) * 1000
             f = (G*self._mass*body.getMass())/(r**2)
 
             x = "eq" if self._pos.x == body.getPos().x else "lt" if self._pos.x > body.getPos().x else "gt"
@@ -76,7 +78,7 @@ class Body:
     def getMass(self) -> float:
         return self._mass
 
-BODIES: list[Body] = [Body((50, 100), (0, 0), 100000), Body((200, 500), (0, 0), 100000), Body((400, 700), (0, 0), 100000)]
+BODIES: list[Body] = [Body((100, 600), (0, 0), 6*10e24), Body((484, 600), (0, 0), 7.3*10e22)]
 
 running = True
 while running:
@@ -84,7 +86,7 @@ while running:
         running = False
     
     
-        SCREEN.fill((0, 0, 0))
+    SCREEN.fill((0, 0, 0))
     
     for i, body in enumerate(BODIES):
         lst = deepcopy(BODIES)
