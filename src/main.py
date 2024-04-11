@@ -5,10 +5,12 @@ from pygame.math import Vector2
 
 from math import sqrt
 
+from copy import deepcopy
+
 pygame.init()
 
 CLOCK = pygame.time.Clock()
-def dt() -> float: return CLOCK.get_time()/100
+def dt() -> float: return CLOCK.get_time()
 
 SCREEN: pygame.Surface = pygame.display.set_mode((800, 800))
 
@@ -56,17 +58,17 @@ class Body:
                 case ("gt","eq"):
                     self._rfv.x += f
                 case ("lt", "lt"):
-                    self._rfv.x -= (abs(self.pos.x-body.getPos().x)/h)*f
-                    self._rfv.y -= (abs(self.pos.y-body.getPos().y)/h)*f
+                    self._rfv.x -= (abs(self._pos.x-body.getPos().x)/h)*f
+                    self._rfv.y -= (abs(self._pos.y-body.getPos().y)/h)*f
                 case ("lt", "gt"):
-                    self._rfv.x -= (abs(self.pos.x-body.getPos().x)/h)*f
-                    self._rfv.y += (abs(self.pos.y-body.getPos().y)/h)*f
+                    self._rfv.x -= (abs(self._pos.x-body.getPos().x)/h)*f
+                    self._rfv.y += (abs(self._pos.y-body.getPos().y)/h)*f
                 case ("gt", "lt"):
-                    self._rfv.x += (abs(self.pos.x-body.getPos().x)/h)*f
-                    self._rfv.y -= (abs(self.pos.y-body.getPos().y)/h)*f
+                    self._rfv.x += (abs(self._pos.x-body.getPos().x)/h)*f
+                    self._rfv.y -= (abs(self._pos.y-body.getPos().y)/h)*f
                 case ("gt", "gt"):
-                    self._rfv.y += (abs(self.pos.y-body.getPos().y)/h)*f
-                    self._rfv.x += (abs(self.pos.x-body.getPos().x)/h)*f
+                    self._rfv.y += (abs(self._pos.y-body.getPos().y)/h)*f
+                    self._rfv.x += (abs(self._pos.x-body.getPos().x)/h)*f
 
     def getPos(self) -> Vector2:
         return self._pos
@@ -74,17 +76,21 @@ class Body:
     def getMass(self) -> float:
         return self._mass
 
-BODIES: list[Body] = [Body((50, 100), (0, 0), 100), Body((200, 500), (0, 0), 100), Body((400, 700), (0, 0), 100)]
+BODIES: list[Body] = [Body((50, 100), (0, 0), 100000), Body((200, 500), (0, 0), 100000), Body((400, 700), (0, 0), 100000)]
 
 running = True
 while running:
     if pygame.QUIT in map(lambda x: x.type, pygame.event.get()):
         running = False
     
-    for body in BODIES:
+    
         SCREEN.fill((0, 0, 0))
-        body.calcResultantForce(BODIES)
+    
+    for i, body in enumerate(BODIES):
+        lst = deepcopy(BODIES)
+        lst.pop(i)
+        body.calcResultantForce(lst)
         body.update()
         body.render()
-        pygame.display.update()
-        CLOCK.tick()
+    pygame.display.update()
+    CLOCK.tick()
